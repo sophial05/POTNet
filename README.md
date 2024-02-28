@@ -1,4 +1,4 @@
-#Generative Modeling for Tabular Data via Penalized Optimal Transport Network
+# Generative Modeling for Tabular Data via Penalized Optimal Transport Network
 
 ---
 
