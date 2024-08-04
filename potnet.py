@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch.autograd import Variable
 import warnings
 
-from data_transformer import DataTransformer, DiscreteDataTransformer
+from .data_transformer import DataTransformer, DiscreteDataTransformer
 
 class POTNetGenerator(nn.Module):
     """POTNetGenerator module for POTNet."""
