@@ -50,7 +50,7 @@ pip install -r requirements.txt
 We provide two examples for using POTNet, both deposited in the `./examples` folder:
 
 1. **Likelihood-free inference** (`./examples/demo_lfi.ipynb`): We generate 3,000 samples consisting of all continous features from the model
-    * $\theta_i \sim \mathrm{Unif}[-3, 3$ for $i = 1, \dots, 5$
+    * $\theta_i \sim \mathrm{Unif}[-3, 3]$ for $i = 1, \dots, 5$
     * $\mu = (\theta_1, \theta_2)$
     * $\sigma_1 = \theta_3^2$
     * $\sigma_2 = \theta_4^2$
