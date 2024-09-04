@@ -395,7 +395,7 @@ class POTNet():
 
         if not self._conditional:
             self.loss = []
-            for epoch in tqdm(range(self._epochs)):
+            for epoch in tqdm(range(self._epochs), desc="Training POTNet"):
                 avg_loss = []
                 for i, data_batch in enumerate(dataloader):
                     data_batch = Variable(data_batch).to(self._device)
@@ -430,7 +430,7 @@ class POTNet():
                 print("Done fitting POTNet.")
         else:
             self.loss = []
-            for epoch in tqdm(range(self._epochs)):
+            for epoch in tqdm(range(self._epochs), desc="Training POTNet"):
                 avg_loss = []
                 for i, (conditioning_batch, data_batch) in enumerate(dataloader):
                     conditioning_batch = Variable(conditioning_batch).to(self._device)
