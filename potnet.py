@@ -10,8 +10,12 @@ import ot
 from torch.utils.data import DataLoader, Dataset
 from torch.autograd import Variable
 import warnings
+from torch.cuda.amp import autocast, GradScaler
+scaler = GradScaler() 
 
-from .data_transformer import DataTransformer, DiscreteDataTransformer
+from data_transformer import DataTransformer, DiscreteDataTransformer
+
+
 
 class POTNetGenerator(nn.Module):
     """POTNetGenerator module for POTNet."""
@@ -397,30 +401,34 @@ class POTNet():
             self.loss = []
             for epoch in tqdm(range(self._epochs), desc="Training POTNet"):
                 avg_loss = []
+
                 for i, data_batch in enumerate(dataloader):
-                    data_batch = Variable(data_batch).to(self._device)
+                    data_batch = data_batch.to(self._device)
                     batch_size = data_batch.shape[0]
 
                     self._optimizer.zero_grad()
-                    noise_vec = torch.randn((batch_size, self._embedding_dim),
-                                            device = self._device)
-                    noise_vec = Variable(noise_vec)
-                    generated_batch = self._generator(noise_vec)
+                    noise_vec = torch.randn((batch_size, self._embedding_dim), device=self._device)
+                    
+                    with autocast(): 
+                        generated_batch = self._generator(noise_vec)
+                        
+                        ab = torch.ones(batch_size, device=self._device) / batch_size
+                        dist_mat = torch.cdist(data_batch, generated_batch, p=2.0)
+                        joint_loss = ot.emd2(ab, ab, dist_mat)
+                        
+                        loss_marginal = torch.sum(self._mp_lambdas * ot.wasserstein_1d(data_batch, generated_batch, ab, ab, self._p))
+                        
+                        total_loss = joint_loss + loss_marginal
 
-                    ab = torch.ones(batch_size) / batch_size
-                    ab = ab.to(self._device)
+                    # scale loss for mixed precision training
+                    scaler.scale(total_loss).backward()  
+                    scaler.step(self._optimizer)
+                    scaler.update()
 
-                    dist_mat = torch.cdist(data_batch, generated_batch, p=2.0)
-                    joint_loss = ot.emd2(ab, ab, dist_mat)
-                    avg_loss.append(float(joint_loss.detach()))
-                    joint_loss.backward(retain_graph=True)
-                    del dist_mat
+                    avg_loss.append(total_loss.item())
 
-                    loss_marginal = torch.sum(self._mp_lambdas * ot.wasserstein_1d(data_batch, generated_batch, ab, ab, self._p))
-                    loss_marginal.backward(retain_graph=True)
-                    avg_loss.append(float(loss_marginal.detach()))
+                    del dist_mat  
 
-                    self._optimizer.step()
                 self.loss.append(np.mean(avg_loss))
                 
                 if self._verbose:
@@ -433,34 +441,36 @@ class POTNet():
             for epoch in tqdm(range(self._epochs), desc="Training POTNet"):
                 avg_loss = []
                 for i, (conditioning_batch, data_batch) in enumerate(dataloader):
-                    conditioning_batch = Variable(conditioning_batch).to(self._device)
-                    data_batch = Variable(data_batch).to(self._device)
+                    conditioning_batch = conditioning_batch.to(self._device)
+                    data_batch = data_batch.to(self._device)
                     batch_size = data_batch.shape[0]
 
                     self._optimizer.zero_grad()
-                    noise_vec = torch.randn((batch_size, self._embedding_dim),
-                                            device = self._device)
-                    noise_vec = Variable(noise_vec)
-                    generated_batch = self._generator(conditioning_batch, noise_vec)
+                    noise_vec = torch.randn((batch_size, self._embedding_dim), device=self._device)
+                    
+                    with autocast():
+                        generated_batch = self._generator(conditioning_batch, noise_vec)
+                        
+                        ab = torch.ones(batch_size, device=self._device) / batch_size
 
-                    ab = torch.ones(batch_size) / batch_size
-                    ab = ab.to(self._device)
-
-                    dist_mat = torch.cdist(data_batch, generated_batch, p=2.0)
-                    joint_loss = ot.emd2(ab, ab, dist_mat)
-                    avg_loss.append(float(joint_loss.detach()))
-                    joint_loss.backward(retain_graph=True)
+                        dist_mat = torch.cdist(data_batch, generated_batch, p=2.0)
+                        joint_loss = ot.emd2(ab, ab, dist_mat)
+                        
+                        loss_marginal = torch.sum(self._mp_lambdas * ot.wasserstein_1d(data_batch, generated_batch, ab, ab, self._p))
+                        
+                        total_loss = joint_loss + loss_marginal
+                    
+                    # scale loss for mixed precision training
+                    scaler.scale(total_loss).backward()
+                    scaler.step(self._optimizer)
+                    scaler.update()
+                    avg_loss.append(total_loss.item())
+                    
                     del dist_mat
-
-                    loss_marginal = torch.sum(self._mp_lambdas * ot.wasserstein_1d(data_batch, generated_batch, ab, ab, self._p))
-                    loss_marginal.backward(retain_graph=True)
-                    avg_loss.append(float(loss_marginal.detach()))
-
-                    self._optimizer.step()
                 self.loss.append(np.mean(avg_loss))
                 
                 if self._verbose:
-                    print("Epoch: {} | Loss: {}".format(epoch+1, self.loss[-1]))
+                    print(f"Epoch: {epoch+1} | Loss: {self.loss[-1]}")
             
             if self._verbose:
                 print("Done fitting POTNet.")
