@@ -1,6 +1,6 @@
 numpy
 pandas
 matplotlib
-torch == 2.1.2
+torch == 2.4.1
 pot == 0.9.3
 sklearn

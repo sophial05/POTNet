@@ -10,8 +10,8 @@ import ot
 from torch.utils.data import DataLoader, Dataset
 from torch.autograd import Variable
 import warnings
-from torch.cuda.amp import autocast, GradScaler
-scaler = GradScaler() 
+from torch.amp import autocast, GradScaler
+scaler = GradScaler('cuda' if torch.cuda.is_available() else 'cpu')
 
 from data_transformer import DataTransformer, DiscreteDataTransformer
 
@@ -409,7 +409,7 @@ class POTNet():
                     self._optimizer.zero_grad()
                     noise_vec = torch.randn((batch_size, self._embedding_dim), device=self._device)
                     
-                    with autocast(): 
+                    with autocast('cuda' if torch.cuda.is_available() else 'cpu'): 
                         generated_batch = self._generator(noise_vec)
                         
                         ab = torch.ones(batch_size, device=self._device) / batch_size
@@ -424,7 +424,6 @@ class POTNet():
                     scaler.scale(total_loss).backward()  
                     scaler.step(self._optimizer)
                     scaler.update()
-
                     avg_loss.append(total_loss.item())
 
                     del dist_mat  
