@@ -1,4 +1,4 @@
-# Generative Modeling for Tabular Data via Penalized Optimal Transport Network
+# Efficient Generative Modeling via Penalized Optimal Transport Network
 
 ---
 
@@ -19,7 +19,7 @@ This repository contains implementation of the POTNet model described in the pap
 
 ## Installation <br />
 
-**Python version**: 3.10
+**Python version**: 3.9.13
 
 **Intall dependences**:
 ```bash
@@ -27,6 +27,18 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+
+To run the following package from command line, execute the following lines:
+
+```bash
+conda create -n env_name python=3.9 -n
+conda activate env_name
+
+pip install -r requirements.txt
+pip install .
+
+python3 demo.py
+```
 
 * **Input**: When using POTNet, continuous and discrete features should be represented as `float`. Categorical columns can be represented as either `str`, `int`, or `float`. 
 
@@ -77,7 +89,10 @@ potnet_model= POTNet(embedding_dim=data.shape[1],
                       categorical_cols=cat_cols,
                       numeric_output_data_type = 'continuous', # continuous data
                       epochs=500,
-                      batch_size=256)
+                      batch_size=256,
+                      save_checkpoint=True, # save checkpoint periodically
+                      checkpoint_epoch = 50 # save checkpoint every 50 epochs
+                      )
 
 # fit POTNet
 potnet_model.fit(data)
@@ -91,13 +106,13 @@ potnet_model.save('potnet_model.pt')
 
 # Reference
 
-If you use POTNet in your research, please cite the following paper:
+If you use POTNet in your research or project, please cite the following paper:
 
 ```
 @article{lu2024generative,
-  title={Generative Modeling for Tabular Data via Penalized Optimal Transport Network},
+  title={Efficient Generative Modeling via Penalized Optimal Transport Network},
   author={Lu, Wenhui Sophia and Zhong, Chenyang and Wong, Wing Hung},
   journal={arXiv preprint arXiv:2402.10456},
-  year={2024}
+  year={2025}
 }
 ```
