@@ -1,7 +1,8 @@
-numpy
+numpy == 1.26.4
+scipy == 1.13.1
 pandas
 matplotlib
 torch == 2.4.1
 pot == 0.9.3
-sklearn
+scikit-learn
 tqdm
