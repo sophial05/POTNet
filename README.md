@@ -1,21 +1,22 @@
-# Efficient Generative Modeling via Penalized Optimal Transport Network
-
----
-
-<p align="left">
+<div align="left">
   <a href="https://arxiv.org/abs/2402.10456">
     <img alt="Paper URL" src="https://img.shields.io/badge/arxiv-2402.10456-orange">
   </a>
-</p>
+</div>
 
 
-## Overview <br />
+# Efficient Generative Modeling via Penalized Optimal Transport Network
 
-POTNet is a deep generative model for generating mixed-type tabular data (continuous/discrete/categorical) based on the marginally-penalized Wasserstein loss. 
 
-This repository contains implementation of the POTNet model described in the paper:
+<a href='https://arxiv.org/abs/2402.10456'>
+    <img align="left" src="potnet_logo.png" height="150" style="margin-right: 10px; margin-bottom: 10px;" />
+</a> 
 
-> [Generative Modeling for Tabular Data via Penalized Optimal Transport Network<br>](https://arxiv.org/abs/2402.10456)
+**POTNet** is a deep generative model for generating mixed-type tabular data (continuous/discrete/categorical) based on the marginally-penalized Wasserstein loss. 
+
+This repository contains an implementation of the POTNet model as described in the paper:
+
+[Efficient Generative Modeling via Penalized Optimal Transport Network<br>](https://arxiv.org/abs/2402.10456)<br>
 
 ## Installation <br />
 
