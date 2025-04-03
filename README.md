@@ -14,9 +14,9 @@
 
 **POTNet** is a deep generative model for generating mixed-type tabular data (continuous/discrete/categorical) based on the marginally-penalized Wasserstein loss. 
 
-This repository contains an implementation of the POTNet model as described in the paper:
+This repository contains an implementation of the POTNet model as described in the paper: [Efficient Generative Modeling via Penalized Optimal Transport Network](https://arxiv.org/abs/2402.10456).
 
-[Efficient Generative Modeling via Penalized Optimal Transport Network<br>](https://arxiv.org/abs/2402.10456)<br>
+<br>
 
 ## Installation <br />
 
