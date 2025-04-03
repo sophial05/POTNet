@@ -5,12 +5,12 @@ setup(
     version='1.0.0',
     packages=find_packages(),
     install_requires=[
-        'numpy',  
+        'numpy==1.26.4',  
         'pandas',
         'matplotlib',
         'torch==2.4.1', 
         'pot==0.9.3', 
-        'sklearn',
+        'scikit-learn',
         'tqdm'
     ],
     python_requires='>=3.9',  
